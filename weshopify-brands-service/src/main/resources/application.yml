@@ -21,7 +21,11 @@ logging:  file:    name: application.logs
   level: 
    root: INFO  pattern:    file: '%d{dd-MMM-yyyy HH:mm:ss,SSS} %-5level %logger{100}-%M-%L - %msg%n'
   logback:    rollingpolicy:      max-file-size: 1GB
-      clean-history-on-start: true         
+      clean-history-on-start: true
+
+service: 
+ category: 
+   baseUri: ${CATEGORY_BASE_URI:http://localhost:5002/categories}        
 ---
 #
 # Dev Environment Configurations
@@ -30,7 +34,7 @@ spring:
  profiles: dev
  datasource: 
   driver-class-name: ${DB_DRIVER:com.mysql.cj.jdbc.Driver}
-  url: jdbc:${DB_TYPE:mysql}://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_SCHEMA:shopifyme}
+  url: jdbc:${DB_TYPE:mysql}://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_SCHEMA:weshopify-brands-service}
   username: ${DB_USER_NAME:root} 
   password: ${DB_USER_PWD:root}
 ---

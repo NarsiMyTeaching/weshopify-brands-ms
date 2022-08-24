@@ -1,10 +1,7 @@
 package com.weshopify.platform.features.brands.bean;
 
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
-
-import org.springframework.web.multipart.MultipartFile;
+import java.util.List;
 
 import lombok.Data;
 
@@ -22,7 +19,8 @@ public class BrandBean implements Serializable{
 	private String name;
 	
 	private String logo;
-   private Set<CategoryBean> categories = new HashSet<>();
+   //private Set<CategoryBean> categories = new HashSet<>();
+	private List<Object> categories;
    
    private String fileImage;
 }

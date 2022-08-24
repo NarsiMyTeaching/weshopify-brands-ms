@@ -47,11 +47,15 @@
 			<artifactId>springdoc-openapi-ui</artifactId>
 			<version>1.6.9</version>
 		</dependency>
-		<!-- <dependency>
-			<groupId>com.durgasoft</groupId>
-			<artifactId>weshopify-categories-service</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency> -->
+		<!-- <dependency> <groupId>com.durgasoft</groupId> <artifactId>weshopify-categories-service</artifactId> 
+			<version>0.0.1-SNAPSHOT</version> </dependency> -->
+		<!-- https://mvnrepository.com/artifact/org.json/json -->
+		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>20220320</version>
+		</dependency>
+
 	</dependencies>
 
 	<build>

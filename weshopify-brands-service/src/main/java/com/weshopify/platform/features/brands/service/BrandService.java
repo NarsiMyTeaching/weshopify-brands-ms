@@ -1,23 +1,22 @@
 package com.weshopify.platform.features.brands.service;
 
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.weshopify.platform.features.brands.bean.BrandBean;
-import com.weshopify.platform.features.brands.bean.CategoryBean;
 import com.weshopify.platform.features.brands.domain.Brand;
-import com.weshopify.platform.features.brands.domain.Category;
 import com.weshopify.platform.features.brands.exceptions.BrandNotFoundException;
+import com.weshopify.platform.features.brands.outbound.CategoriesOutboundService;
 import com.weshopify.platform.features.brands.repo.BrandRepository;
 
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +28,9 @@ public class BrandService {
 
 	@Autowired
 	private BrandRepository repo;
+	
+	@Autowired
+	private CategoriesOutboundService categoryOutboundService;
 
 	public List<Brand> listAll() {
 		return (List<Brand>) repo.findAll();
@@ -40,44 +42,70 @@ public class BrandService {
 		return repo.findAll(pageable).getContent();
 	}
 
+	/*
+	 * public BrandBean save(BrandBean brandBean) {
+	 * 
+	 * Brand brand = mapBeanToDomain(brandBean); brand = repo.save(brand); brandBean
+	 * = mapDomainToBean(brand); return brandBean; }
+	 */
+	public BrandBean save(BrandBean brandBean, String logo) {
+		Brand brandDomain = mapBeanToDomain(brandBean); 
+		brandDomain.setLogo(logo);
+		brandDomain = repo.save(brandDomain);
+
+		brandBean  = mapDomainToBean(brandDomain); 
+		return brandBean;
+	}
+
 	public BrandBean save(BrandBean brandBean) {
-		
-		Brand brand = mapBeanToDomain(brandBean);
-		brand = repo.save(brand);
-		brandBean = mapDomainToBean(brand);
+		Brand brandDomain = new Brand();
+		BeanUtils.copyProperties(brandBean, brandDomain);
+		brandDomain = repo.save(brandDomain);
+		BeanUtils.copyProperties(brandDomain, brandBean);
 		return brandBean;
 	}
 
 	private BrandBean mapDomainToBean(Brand brandDomain) {
 		BrandBean brandBean = new BrandBean();
 		BeanUtils.copyProperties(brandDomain, brandBean);
-		Set<Category> catset = brandDomain.getCategories();
-		if (catset != null && catset.size() > 0) {
-			Set<CategoryBean> catSet = new HashSet<>();
-			catset.forEach(cat -> {
-				CategoryBean catBean = new CategoryBean();
-				System.out.println("categories data is:\t" + cat.getName());
-				BeanUtils.copyProperties(cat, catBean);
-				catSet.add(catBean);
-
-			});
-			brandBean.setCategories(catSet);
+		//Set<Category> catset = brandDomain.getCategories();
+		String catset = brandDomain.getCategories();
+		if (catset != null) {
+			/*
+			 * Set<CategoryBean> catSet = new HashSet<>(); catset.forEach(cat -> {
+			 * CategoryBean catBean = new CategoryBean();
+			 * System.out.println("categories data is:\t" + cat.getName());
+			 * BeanUtils.copyProperties(cat, catBean); catSet.add(catBean);
+			 * 
+			 * });
+			 */
+			brandBean.setCategories(Arrays.asList(catset));
 		}
+		brandBean.setLogo(brandDomain.getLogo());
 		return brandBean;
 	}
 	private Brand mapBeanToDomain(BrandBean brandBean) {
 		Brand brand = new Brand();
 		BeanUtils.copyProperties(brandBean, brand);
-		Set<CategoryBean> catset = brandBean.getCategories();
-		if (catset != null && catset.size() > 0) {
-			Set<Category> catDomainSet = new HashSet<>();
-			catset.forEach(catBean -> {
-				Category catDomain = new Category();
-				BeanUtils.copyProperties(catBean, catDomain);
-				catDomainSet.add(catDomain);
-
-			});
-			brand.setCategories(catDomainSet);
+		List<String> catOriginalData = new ArrayList<>();
+		//Set<CategoryBean> catset = brandBean.getCategories();
+		List<Object> catset =brandBean.getCategories();
+		if (catset != null) {
+			JSONArray array = new JSONArray(catset);
+			for(int i=0;i<array.length();i++) {
+				JSONObject jsonOb = array.getJSONObject(i);
+				int catId = jsonOb.getInt("id");
+				String catData = categoryOutboundService.findCategoryById(catId);
+				catOriginalData.add(catData);
+			}
+			/*
+			 * Set<Category> catDomainSet = new HashSet<>(); catset.forEach(catBean -> {
+			 * Category catDomain = new Category(); BeanUtils.copyProperties(catBean,
+			 * catDomain); catDomainSet.add(catDomain);
+			 * 
+			 * });
+			 */
+			brand.setCategories(catOriginalData.toString());
 		}
 		return brand;
 	}
