@@ -20,10 +20,10 @@ public class CategoriesOutboundService {
 	private RestTemplate restTemplate;
 	
 	public String findCategoryById(int id) {
-		categoryServiceUri = categoryServiceUri+"?sortDir=asc";
-		log.info("Category service URL is:\t"+categoryServiceUri);
+		String updatedCategoryServiceUri = categoryServiceUri+"/"+id;
+		log.info("Category service URL is:\t"+updatedCategoryServiceUri);
 		
-		ResponseEntity<String> response = restTemplate.getForEntity(categoryServiceUri, String.class);
+		ResponseEntity<String> response = restTemplate.getForEntity(updatedCategoryServiceUri, String.class);
 		log.info("response code is:\t"+response.getStatusCode());
 		if(response.getStatusCodeValue()==HttpStatus.OK.value()) {
 			String respData = response.getBody();

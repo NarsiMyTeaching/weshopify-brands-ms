@@ -7,7 +7,16 @@ spring:
  jpa:    hibernate:      ddl-auto: update
     show-sql: true
  profiles: 
-   active: ${APP_PROFILE:dev}     
+   active: ${APP_PROFILE:dev} 
+ rabbitmq:
+    host: jackal.rmq.cloudamqp.com
+    port: 5672
+    username: zbmsihsn
+    password: vn5DDww_Mt95ayxNEPMk14wg1d3ANJMb
+    virtual-host: zbmsihsn
+   # routingKey: weshopify-platform-routing
+    qname: weshopify-platform-queue
+    #exchange: weshopify-platform-exchange       
    
 server: 
  port: 5003
@@ -25,7 +34,9 @@ logging:  file:    name: application.logs
 
 service: 
  category: 
-   baseUri: ${CATEGORY_BASE_URI:http://localhost:5002/categories}        
+   baseUri: ${CATEGORY_BASE_URI:http://localhost:5002/categories}
+
+
 ---
 #
 # Dev Environment Configurations
